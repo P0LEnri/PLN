@@ -2,27 +2,29 @@ from sklearn.datasets import fetch_20newsgroups
 import spacy
 #Funcion para quitar stopwords
 def stopwords (doc):
+    #doc = nlp(doc)
     stop_words = [
-        "el", "la", "los", "las", "un", "una", "unos", "unas", "al", "del", "lo", "este", "ese", "aquel", "estos", "esos", "aquellos", "este", "esta", "estas", "eso", "esa", "esas", "aquello", "alguno", "alguna", "algunos", "algunas",
-        "a", "ante", "bajo", "cabe", "con", "contra", "de", "desde", "en", "entre", "hacia", "hasta", "para", "por", "según", "sin", "so", "sobre", "tras", "durante", "mediante", "excepto", "a través de", "conforme a", "encima de", "debajo de", "frente a", "dentro de",
-        "y", "o", "pero", "ni", "que", "si", "como", "porque", "aunque", "mientras", "siempre que", "ya que", "pues", "a pesar de que", "además", "sin embargo", "así que", "por lo tanto", "por lo que", "tan pronto como", "a medida que", "tanto como", "no solo... sino también", "o bien", "bien... bien",
-        "yo", "tú", "él", "ella", "nosotros", "vosotros", "ellos", "ellas", "usted", "nosotras", "me", "te", "le", "nos", "os", "les", "se", "mí", "ti", "sí", "conmigo", "contigo", "consigo", "mi", "tu", "su", "nuestro", "vuestro", "sus", "mío", "tuyo", "suyo", "nuestro", "vuestro", "suyo"]
+    "the", "a", "an", "some", "to", "of", "the", "it", "this", "that", "those", "these", "these", "those", "this", "this", "these", "that", "that", "those", "that", "some", "a", "an", "some", "some", "a", "before", "under", "about", "with", "against", "from", "since", "in", "between", "toward", "until", "for", "by", "according to", "without", "so", "on", "after", "during", "by means of", "except", "through", "according to", "above", "below", "in front of", "inside", 
+    "and", "or", "but", "nor", "that", "if", "as", "because", "although", "while", "whenever", "since", "because", "even though", "furthermore", "however", "so", "therefore", "so", "as", "as soon as", "as", "both", "either", "neither", "not only... but also", "or", "either... or",
+    "I", "you", "he", "she", "we", "you", "they", "they", "you", "we", "me", "you", "him", "us", "you", "them", "themselves", "myself", "yourself", "himself", "mine", "yours", "his", "ours", "yours", "theirs", "mine", "yours", "his", "ours", "yours", "theirs" , "i"
+    ]
     texto_sin_stopwords = [token for token in doc if token.text.lower() not in stop_words]
     #union de tokens
-    texto_sin_stopwords = ' '.join(texto_sin_stopwords)
+    texto_sin_stopwords = ' '.join(token.text for token in texto_sin_stopwords)
+
     return texto_sin_stopwords
 
 #Funcion para lematizar
 def lematizar (doc):
     lemmatized_tokens = []
     doc = nlp(doc)
-    for token in doc:
+    for token in doc: 
         lemmatized_tokens.append(token.lemma_)
     #union de tokens
     lemmatized_tokens = ' '.join(lemmatized_tokens)
     return lemmatized_tokens
 
-nlp = spacy.load("es_core_news_sm")
+nlp = spacy.load("en_core_web_sm")
 
 #Carga y separación del corpus
 newsgroups_train = fetch_20newsgroups(subset='train')
@@ -31,22 +33,26 @@ newsgroups_test = fetch_20newsgroups(subset='test')
 
 #Preprocesamiento del corpus
 #Quitar stopwords
-newsgroups_train.data = [stopwords(doc) for doc in newsgroups_train.data]
-newsgroups_test.data = [stopwords(doc) for doc in newsgroups_test.data]
+newsgroups_trainDataSinSW = [stopwords(nlp(doc)) for doc in newsgroups_train.data]
+newsgroups_testDataSinSW = [stopwords(nlp(doc)) for doc in newsgroups_test.data]
 
 #guardar corpus en un archivo
 
-with open('newsgroups_trainDataSinStopwords.txt', 'w', encoding='utf-8') as f:
-    for item in newsgroups_train.data:
+with open('newsgroups_trainDataSinStopwords_en.txt', 'w', encoding='utf-8') as f:
+    for item in newsgroups_trainDataSinSW:
         f.write("%s\n&&&&&&&&\n" % item)
-with open('newsgroups_testDataSinStopwords.txt', 'w', encoding='utf-8') as f:
-    for item in newsgroups_test.data:
+with open('newsgroups_testDataSinStopwords_en.txt', 'w', encoding='utf-8') as f:
+    for item in newsgroups_testDataSinSW:
         f.write("%s\n&&&&&&&&\n" % item)
 
 
 #X_train = newsgroups_train.data
-y_train = newsgroups_train.target
 #X_test = newsgroups_test.data
+
+X_train = newsgroups_trainDataSinSW
+X_test = newsgroups_testDataSinSW
+
+y_train = newsgroups_train.target
 y_test = newsgroups_test.target
 
 #guardar corpus en un archivo
@@ -74,11 +80,14 @@ with open('newsgroups_testTarget.txt', 'w', encoding='utf-8') as f:
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.feature_extraction.text import CountVectorizer
 #vectorizer = TfidfVectorizer()
+#vectorizer = CountVectorizer()
+#vectorizer = CountVectorizer(binary=True)
+
 #representación del texto frecuencia
 
-vectorizer = CountVectorizer(binary=True)
-vectors_train = vectorizer.fit_transform(newsgroups_train.data)
-vectors_test = vectorizer.transform(newsgroups_test.data)
+vectorizer = TfidfVectorizer()
+vectors_train = vectorizer.fit_transform(X_train)
+vectors_test = vectorizer.transform(X_test)
 
 #Guarda los vectores en un archivo
 
