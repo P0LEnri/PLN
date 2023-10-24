@@ -57,7 +57,11 @@ with open('newsgroups_testTarget.txt', 'w', encoding='utf-8') as f:
 
 #representación del texto TF-IDF
 from sklearn.feature_extraction.text import TfidfVectorizer
-vectorizer = TfidfVectorizer()
+from sklearn.feature_extraction.text import CountVectorizer
+#vectorizer = TfidfVectorizer()
+#representación del texto frecuencia
+
+vectorizer = CountVectorizer()
 vectors_train = vectorizer.fit_transform(newsgroups_train.data)
 vectors_test = vectorizer.transform(newsgroups_test.data)
 
@@ -78,57 +82,47 @@ with open('vectors_testTFIDF.txt', 'w', encoding='utf-8') as f:
 from sklearn.metrics import classification_report
 
 #logistic regression
-"""
 from sklearn.linear_model import LogisticRegression
-
 clf = LogisticRegression()
 clf.fit(vectors_train, y_train)
 y_pred = clf.predict(vectors_test)
 print ('*****************Logistic Regression****************')
-print (y_pred)
-# ~ print ('vectors_train.shape {}'.format(vectors_train.shape))
-# ~ print ('vectors_test.shape {}'.format(vectors_test.shape))
 print (classification_report(y_test, y_pred))
 
-"""
+
 
 #multinomial naive bayes
-
-"""
 from sklearn.naive_bayes import MultinomialNB
 clf = MultinomialNB()
 clf.fit(vectors_train, y_train)
 y_pred = clf.predict(vectors_test)
 print ('*****************MultinomialNB****************')
-print (y_pred)
-print (classification_report(y_test, y_pred))"""
+print (classification_report(y_test, y_pred))
 
 
 #kneighbors classifier
-"""
 from sklearn.neighbors import KNeighborsClassifier
 clf = KNeighborsClassifier()
 clf.fit(vectors_train, y_train)
 y_pred = clf.predict(vectors_test)
 print ('*****************KNeighborsClassifier****************')
 print (classification_report(y_test, y_pred))
-"""
-#multilayer perceptron
-"""
 
+
+#random forest classifier
+from sklearn.ensemble import RandomForestClassifier
+clf = RandomForestClassifier()
+clf.fit(vectors_train, y_train)
+y_pred = clf.predict(vectors_test)
+print ('*****************RandomForestClassifier****************')
+print (classification_report(y_test, y_pred))
+
+"""#multilayer perceptron
 from sklearn.neural_network import MLPClassifier
 clf = MLPClassifier()
 clf.fit(vectors_train, y_train)
 y_pred = clf.predict(vectors_test)
 print ('*****************MLPClassifier****************')
 print (classification_report(y_test, y_pred))
+
 """
-
-#Support Vector Machines
-
-from sklearn.svm import SVC
-clf = SVC()
-clf.fit(vectors_train, y_train)
-y_pred = clf.predict(vectors_test)
-print ('*****************SVC****************')
-print (classification_report(y_test, y_pred))
