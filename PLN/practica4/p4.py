@@ -29,9 +29,24 @@ newsgroups_train = fetch_20newsgroups(subset='train')
 print (newsgroups_train.filenames.shape)
 newsgroups_test = fetch_20newsgroups(subset='test')
 
-X_train = newsgroups_train.data
+#Preprocesamiento del corpus
+#Quitar stopwords
+newsgroups_train.data = [stopwords(doc) for doc in newsgroups_train.data]
+newsgroups_test.data = [stopwords(doc) for doc in newsgroups_test.data]
+
+#guardar corpus en un archivo
+
+with open('newsgroups_trainDataSinStopwords.txt', 'w', encoding='utf-8') as f:
+    for item in newsgroups_train.data:
+        f.write("%s\n&&&&&&&&\n" % item)
+with open('newsgroups_testDataSinStopwords.txt', 'w', encoding='utf-8') as f:
+    for item in newsgroups_test.data:
+        f.write("%s\n&&&&&&&&\n" % item)
+
+
+#X_train = newsgroups_train.data
 y_train = newsgroups_train.target
-X_test = newsgroups_test.data
+#X_test = newsgroups_test.data
 y_test = newsgroups_test.target
 
 #guardar corpus en un archivo
