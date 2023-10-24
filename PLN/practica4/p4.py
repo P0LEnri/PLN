@@ -61,7 +61,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 #vectorizer = TfidfVectorizer()
 #representación del texto frecuencia
 
-vectorizer = CountVectorizer()
+vectorizer = CountVectorizer(binary=True)
 vectors_train = vectorizer.fit_transform(newsgroups_train.data)
 vectors_test = vectorizer.transform(newsgroups_test.data)
 
