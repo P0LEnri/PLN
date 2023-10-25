@@ -70,28 +70,38 @@ with open('newsgroups_testDataLem_en.txt', 'w', encoding='utf-8') as f:
     for item in newsgroups_testDataLem:
         f.write("%s\n&&&&&&&&\n" % item)"""
 #Recuperar corpus de un archivo separado por &&&&&&&&
-with open('newsgroups_trainDataLem_en.txt', 'r', encoding='utf-8') as f:
+"""with open('newsgroups_trainDataLem_en.txt', 'r', encoding='utf-8') as f:
     newsgroups_trainDataLem = f.read().split('\n&&&&&&&&')
     # eliminar el último elemento de la lista que es vacío
     newsgroups_trainDataLem.pop()
 with open('newsgroups_testDataLem_en.txt', 'r', encoding='utf-8') as f:
     newsgroups_testDataLem = f.read().split('\n&&&&&&&&')
     # eliminar el último elemento de la lista que es vacío
-    newsgroups_testDataLem.pop()
+    newsgroups_testDataLem.pop()"""
 
 #quitamos stopwords al texto lematizado
-newsgroups_trainDataLemSinSW = [stopwords(nlp(doc)) for doc in newsgroups_trainDataLem]
+"""newsgroups_trainDataLemSinSW = [stopwords(nlp(doc)) for doc in newsgroups_trainDataLem]
 newsgroups_testDataLemSinSW = [stopwords(nlp(doc)) for doc in newsgroups_testDataLem]
-
+"""
 #guardar corpus en un archivo
-with open('newsgroups_trainDataLemSinSW_en.txt', 'w', encoding='utf-8') as f:
+"""with open('newsgroups_trainDataLemSinSW_en.txt', 'w', encoding='utf-8') as f:
     for item in newsgroups_trainDataLemSinSW:
         f.write("%s\n&&&&&&&&\n" % item)
 with open('newsgroups_testDataLemSinSW_en.txt', 'w', encoding='utf-8') as f:
     for item in newsgroups_testDataLemSinSW:
-        f.write("%s\n&&&&&&&&\n" % item)
+        f.write("%s\n&&&&&&&&\n" % item)"""
 #X_train = newsgroups_train.data
 #X_test = newsgroups_test.data
+
+with open('newsgroups_trainDataLemSinSW_en.txt', 'r', encoding='utf-8') as f:
+    newsgroups_trainDataLemSinSW = f.read().split('\n&&&&&&&&')
+    # eliminar el último elemento de la lista que es vacío
+    newsgroups_trainDataLemSinSW.pop()
+with open('newsgroups_testDataLemSinSW_en.txt', 'r', encoding='utf-8') as f:
+    newsgroups_testDataLemSinSW = f.read().split('\n&&&&&&&&')
+    # eliminar el último elemento de la lista que es vacío
+    newsgroups_testDataLemSinSW.pop()
+
 
 X_train = newsgroups_trainDataLemSinSW
 X_test = newsgroups_testDataLemSinSW
@@ -131,7 +141,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 
 #representación del texto frecuencia
 
-vectorizer = TfidfVectorizer()
+vectorizer = CountVectorizer()
 vectors_train = vectorizer.fit_transform(X_train)
 vectors_test = vectorizer.transform(X_test)
 
