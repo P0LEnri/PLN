@@ -33,24 +33,70 @@ newsgroups_test = fetch_20newsgroups(subset='test')
 
 #Preprocesamiento del corpus
 #Quitar stopwords
-newsgroups_trainDataSinSW = [stopwords(nlp(doc)) for doc in newsgroups_train.data]
+"""newsgroups_trainDataSinSW = [stopwords(nlp(doc)) for doc in newsgroups_train.data]
 newsgroups_testDataSinSW = [stopwords(nlp(doc)) for doc in newsgroups_test.data]
-
+"""
 #guardar corpus en un archivo
 
-with open('newsgroups_trainDataSinStopwords_en.txt', 'w', encoding='utf-8') as f:
+"""with open('newsgroups_trainDataSinStopwords_en.txt', 'w', encoding='utf-8') as f:
     for item in newsgroups_trainDataSinSW:
         f.write("%s\n&&&&&&&&\n" % item)
 with open('newsgroups_testDataSinStopwords_en.txt', 'w', encoding='utf-8') as f:
     for item in newsgroups_testDataSinSW:
         f.write("%s\n&&&&&&&&\n" % item)
+"""
 
+#Recuperar corpus de un archivo separado por &&&&&&&&
 
+"""with open('newsgroups_trainDataSinStopwords_en.txt', 'r', encoding='utf-8') as f:
+    newsgroups_trainDataSinSW = f.read().split('\n&&&&&&&&')
+    # eliminar el último elemento de la lista que es vacío
+    newsgroups_trainDataSinSW.pop()
+
+with open('newsgroups_testDataSinStopwords_en.txt', 'r', encoding='utf-8') as f:
+    newsgroups_testDataSinSW = f.read().split('\n&&&&&&&&')
+    # eliminar el último elemento de la lista que es vacío
+    newsgroups_testDataSinSW.pop()"""
+
+#Lematizar
+"""newsgroups_trainDataLem = [lematizar(nlp(doc)) for doc in newsgroups_train.data]
+newsgroups_testDataLem = [lematizar(nlp(doc)) for doc in newsgroups_test.data]
+"""
+#guardar corpus en un archivo
+"""with open('newsgroups_trainDataLem_en.txt', 'w', encoding='utf-8') as f:
+    for item in newsgroups_trainDataLem:
+        f.write("%s\n&&&&&&&&\n" % item)
+with open('newsgroups_testDataLem_en.txt', 'w', encoding='utf-8') as f:
+    for item in newsgroups_testDataLem:
+        f.write("%s\n&&&&&&&&\n" % item)"""
+#Recuperar corpus de un archivo separado por &&&&&&&&
+with open('newsgroups_trainDataLem_en.txt', 'r', encoding='utf-8') as f:
+    newsgroups_trainDataLem = f.read().split('\n&&&&&&&&')
+    # eliminar el último elemento de la lista que es vacío
+    newsgroups_trainDataLem.pop()
+with open('newsgroups_testDataLem_en.txt', 'r', encoding='utf-8') as f:
+    newsgroups_testDataLem = f.read().split('\n&&&&&&&&')
+    # eliminar el último elemento de la lista que es vacío
+    newsgroups_testDataLem.pop()
+
+#quitamos stopwords al texto lematizado
+newsgroups_trainDataLemSinSW = [stopwords(nlp(doc)) for doc in newsgroups_trainDataLem]
+newsgroups_testDataLemSinSW = [stopwords(nlp(doc)) for doc in newsgroups_testDataLem]
+
+#guardar corpus en un archivo
+with open('newsgroups_trainDataLemSinSW_en.txt', 'w', encoding='utf-8') as f:
+    for item in newsgroups_trainDataLemSinSW:
+        f.write("%s\n&&&&&&&&\n" % item)
+with open('newsgroups_testDataLemSinSW_en.txt', 'w', encoding='utf-8') as f:
+    for item in newsgroups_testDataLemSinSW:
+        f.write("%s\n&&&&&&&&\n" % item)
 #X_train = newsgroups_train.data
 #X_test = newsgroups_test.data
 
-X_train = newsgroups_trainDataSinSW
-X_test = newsgroups_testDataSinSW
+X_train = newsgroups_trainDataLemSinSW
+X_test = newsgroups_testDataLemSinSW
+
+
 
 y_train = newsgroups_train.target
 y_test = newsgroups_test.target
