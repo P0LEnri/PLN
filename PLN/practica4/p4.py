@@ -1,5 +1,6 @@
 from sklearn.datasets import fetch_20newsgroups
 import spacy
+import re
 #Funcion para quitar stopwords
 def stopwords (doc):
     #doc = nlp(doc)
@@ -23,6 +24,24 @@ def lematizar (doc):
     #union de tokens
     lemmatized_tokens = ' '.join(lemmatized_tokens)
     return lemmatized_tokens
+
+def cleanText (doc):
+    doc = re.sub(r'\S+@\S+', '', doc)
+    # Eliminar líneas con información no deseada
+    doc = re.sub(r'\b(subject|Organization|Distribution|NNTP - Posting - host|X - newsreader|line)\s*:[^\n]*', '', doc)
+
+    # Eliminar líneas con caracteres repetidos
+    doc = re.sub(r'-{8,}', '', doc)
+
+    # Eliminar números de línea
+    doc = re.sub(r'line\s*:\s*\d+', '', doc)
+
+    # Eliminar respuestas o citas de otros correos electrónicos
+    doc = re.sub(r'>[^\n]*', '', doc)
+
+    doc = re.sub(r'[^\w\s]', '', doc)
+
+    return doc
 
 nlp = spacy.load("en_core_web_sm")
 
@@ -103,6 +122,19 @@ with open('newsgroups_testDataLemSinSW_en.txt', 'r', encoding='utf-8') as f:
     newsgroups_testDataLemSinSW.pop()
 
 
+#clean text 
+"""newsgroups_trainDataLemSinSW_CT = [cleanText(doc) for doc in newsgroups_trainDataLemSinSW]
+newsgroups_testDataLemSinSW_CT = [cleanText(doc) for doc in newsgroups_testDataLemSinSW]
+"""
+#guardar corpus en un archivo
+"""with open('newsgroups_trainDataLemSinSW_CT_en.txt', 'w', encoding='utf-8') as f:
+    for item in newsgroups_trainDataLemSinSW_CT:
+        f.write("%s\n&&&&&&&&\n" % item)
+with open('newsgroups_testDataLemSinSW_CT_en.txt', 'w', encoding='utf-8') as f:
+    for item in newsgroups_testDataLemSinSW_CT:
+        f.write("%s\n&&&&&&&&\n" % item)"""
+
+
 X_train = newsgroups_trainDataLemSinSW
 X_test = newsgroups_testDataLemSinSW
 
@@ -141,7 +173,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 
 #representación del texto frecuencia
 
-vectorizer = CountVectorizer()
+vectorizer = TfidfVectorizer()
 vectors_train = vectorizer.fit_transform(X_train)
 vectors_test = vectorizer.transform(X_test)
 
@@ -162,47 +194,71 @@ with open('vectors_testTFIDF.txt', 'w', encoding='utf-8') as f:
 from sklearn.metrics import classification_report
 
 #logistic regression
-from sklearn.linear_model import LogisticRegression
+"""from sklearn.linear_model import LogisticRegression
 clf = LogisticRegression()
 clf.fit(vectors_train, y_train)
 y_pred = clf.predict(vectors_test)
 print ('*****************Logistic Regression****************')
-print (classification_report(y_test, y_pred))
+print (classification_report(y_test, y_pred))"""
 
 
 
 #multinomial naive bayes
 from sklearn.naive_bayes import MultinomialNB
-clf = MultinomialNB()
+"""clf = MultinomialNB()
 clf.fit(vectors_train, y_train)
 y_pred = clf.predict(vectors_test)
 print ('*****************MultinomialNB****************')
-print (classification_report(y_test, y_pred))
+print (classification_report(y_test, y_pred))"""
 
 
 #kneighbors classifier
 from sklearn.neighbors import KNeighborsClassifier
-clf = KNeighborsClassifier()
+"""clf = KNeighborsClassifier()
 clf.fit(vectors_train, y_train)
 y_pred = clf.predict(vectors_test)
 print ('*****************KNeighborsClassifier****************')
-print (classification_report(y_test, y_pred))
+print (classification_report(y_test, y_pred))"""
 
 
 #random forest classifier
 from sklearn.ensemble import RandomForestClassifier
-clf = RandomForestClassifier()
+"""clf = RandomForestClassifier()
 clf.fit(vectors_train, y_train)
 y_pred = clf.predict(vectors_test)
 print ('*****************RandomForestClassifier****************')
-print (classification_report(y_test, y_pred))
+print (classification_report(y_test, y_pred))"""
 
-"""#multilayer perceptron
-from sklearn.neural_network import MLPClassifier
+#multilayer perceptron
+"""from sklearn.neural_network import MLPClassifier
 clf = MLPClassifier()
 clf.fit(vectors_train, y_train)
 y_pred = clf.predict(vectors_test)
 print ('*****************MLPClassifier****************')
 print (classification_report(y_test, y_pred))
-
 """
+from sklearn.neural_network import MLPClassifier
+from sklearn.model_selection import GridSearchCV
+from sklearn.metrics import classification_report
+
+# Define el modelo MLP
+clf = MLPClassifier()
+
+from sklearn.neural_network import MLPClassifier
+
+clf = MLPClassifier(
+    hidden_layer_sizes=(100, 100),  # Número y tamaño de las capas ocultas
+    activation= 'identity',  # Función de activación ('relu' es común)
+    solver='adam',  # Algoritmo de optimización ('adam' es común)
+    alpha=0.001,  # Término de regularización L2
+    learning_rate='adaptive',  # Tasa de aprendizaje adaptativa
+    max_iter=200  # Número máximo de iteraciones
+)
+
+clf.fit(vectors_train, y_train)  # Donde "vectors_train" son los vectores de características de tu conjunto de datos
+y_pred = clf.predict(vectors_test)  # "vectors_test" son los vectores de características del conjunto de prueba
+
+# Imprime el informe de clasificación
+print('*****************MLPClassifier****************')
+print(classification_report(y_test, y_pred))  # Donde "y_test" son las etiquetas verdaderas del conjunto de prueba
+
