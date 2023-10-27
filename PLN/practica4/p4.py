@@ -167,6 +167,8 @@ with open('newsgroups_testTarget.txt', 'w', encoding='utf-8') as f:
 #representación del texto TF-IDF
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.pipeline import Pipeline
+from sklearn.decomposition import TruncatedSVD
 #vectorizer = TfidfVectorizer()
 #vectorizer = CountVectorizer()
 #vectorizer = CountVectorizer(binary=True)
@@ -176,6 +178,8 @@ from sklearn.feature_extraction.text import CountVectorizer
 vectorizer = TfidfVectorizer()
 vectors_train = vectorizer.fit_transform(X_train)
 vectors_test = vectorizer.transform(X_test)
+
+
 
 #Guarda los vectores en un archivo
 
@@ -242,23 +246,85 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import classification_report
 
 # Define el modelo MLP
-clf = MLPClassifier()
+#clf = MLPClassifier()
 
 from sklearn.neural_network import MLPClassifier
 
-clf = MLPClassifier(
+"""clf = MLPClassifier(
     hidden_layer_sizes=(100, 100),  # Número y tamaño de las capas ocultas
-    activation= 'identity',  # Función de activación ('relu' es común)
+    activation= 'relu',  # Función de activación ('relu' es común) indentity
     solver='adam',  # Algoritmo de optimización ('adam' es común)
-    alpha=0.001,  # Término de regularización L2
+    alpha=0.0001,  # Término de regularización L2 0.001
     learning_rate='adaptive',  # Tasa de aprendizaje adaptativa
     max_iter=200  # Número máximo de iteraciones
+)"""
+"""clf = MLPClassifier(
+    hidden_layer_sizes=(100, 50),  # Tamaño de las capas ocultas
+    activation='relu',             # Función de activación ReLU
+    solver='adam',                 # Optimizador Adam
+    alpha=0.0001,                  # Término de regularización L2
+    learning_rate='constant',      # Tasa de aprendizaje constante
+    learning_rate_init=0.001,      # Tasa de aprendizaje inicial
+    max_iter=200,                  # Número máximo de iteraciones
+    random_state=42                # Semilla para reproducibilidad
 )
 
 clf.fit(vectors_train, y_train)  # Donde "vectors_train" son los vectores de características de tu conjunto de datos
 y_pred = clf.predict(vectors_test)  # "vectors_test" son los vectores de características del conjunto de prueba
 
-# Imprime el informe de clasificación
-print('*****************MLPClassifier****************')
-print(classification_report(y_test, y_pred))  # Donde "y_test" son las etiquetas verdaderas del conjunto de prueba
+print ('*****************MLPClassifier****************')
+print (classification_report(y_test, y_pred))
 
+"""
+
+
+from sklearn.svm import SVC
+pipe = Pipeline([('text_representation', TfidfVectorizer()), ('dimensionality_reduction', TruncatedSVD(300)), ('classifier', MLPClassifier(hidden_layer_sizes=(100,),activation="relu",solver="adam",alpha=0.0001,learning_rate="constant",max_iter=200,random_state=42,early_stopping=True,verbose=True))])
+pipe = Pipeline([('text_representation', TfidfVectorizer()), ('dimensionality_reduction', TruncatedSVD(300)), ('classifier', SVC(
+    C=100,            # Parámetro de regularización (ajustar según sea necesario)
+    kernel='rbf',      # Kernel radial basis function (RBF)
+    gamma='scale',    # Escala inversa de la distancia entre puntos para el kernel RBF
+    random_state=42   # Semilla para reproducibilidad
+))])
+
+pipe.set_params(dimensionality_reduction__n_components=1000)
+print (pipe)
+pipe.fit(X_train, y_train)
+y_pred = pipe.predict(X_test)
+print (classification_report(y_test, y_pred))
+
+"""
+clf = MLPClassifier(
+    hidden_layer_sizes=(100,),
+    activation="relu",
+    solver="adam",
+    alpha=0.0001,
+    learning_rate="constant",
+    max_iter=200,
+    random_state=42,
+    early_stopping=True,
+    verbose=True
+)
+clf.fit(vectors_train, y_train)
+y_pred = clf.predict(vectors_test)
+print ('*****************MLPClassifier****************')
+print (classification_report(y_test, y_pred))"""
+
+from sklearn.svm import SVC
+
+"""# Crear el clasificador SVC
+clf = SVC(
+    C=100,            # Parámetro de regularización (ajustar según sea necesario)
+    kernel='rbf',      # Kernel radial basis function (RBF)
+    gamma='scale',    # Escala inversa de la distancia entre puntos para el kernel RBF
+    random_state=42   # Semilla para reproducibilidad
+)
+
+# Entrenar el modelo y realizar la predicción
+clf.fit(vectors_train, y_train)  # Asegúrate de tener tus datos de entrenamiento (X_train, y_train)
+y_pred = clf.predict(vectors_test)  # Asegúrate de tener tus datos de prueba (X_test)
+
+# Imprime el informe de clasificación
+print('*****************SVC****************')
+print(classification_report(y_test, y_pred))  # Donde "y_test" son las etiquetas verdaderas del conjunto de prueba
+"""
